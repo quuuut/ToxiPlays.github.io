@@ -1,0 +1,160 @@
+<html>
+  <head>
+    <title>Lyric Subtitle Tools</title>
+    <!--Mainly for Genius.com scribes to Aegisub but who's keeping score?-->
+    <style>
+      body {
+        font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+        background-color: #1a1a1a;
+        color: #f4f4f4;
+        line-height: 1.8;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      
+      textarea {
+        width: 100%;
+        height: 60%;
+        display: block;
+        text-align: center;
+        background: #333;
+        color: white;
+        font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+        border-radius: 12px;
+        margin-bottom: 1%;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+      
+      button {
+        appearance: none;
+        background-color: #2ea44f;
+        border: 1px solid rgba(27, 31, 35, .15);
+        border-radius: 6px;
+        box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        padding: 6px 16px;
+        position: relative;
+        transition: 0.15s;
+        text-align: center;
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        white-space: nowrap;
+        width: 100%;
+        margin-bottom: 1%;
+      }
+      
+      button:focus:not(:focus-visible):not(.focus-visible) {
+        box-shadow: none;
+        outline: none;
+      }
+      button:hover {
+        background-color: #2c974b;
+        font-weight: 600;
+      }
+      button:focus {
+        box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+        outline: none;
+        font-weight: 600;
+      }
+      button:active {
+        background-color: #298e46;
+        transform: translateY(2px);
+        box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+      }
+      button:disabled {
+        background-color: gray;
+        cursor: not-allowed;
+        opacity: 60%;
+      }
+      
+      .container {
+        width: 80%;
+      }
+    </style>
+    <script>
+      function formatLyrics(lyrics) {
+        return lyrics
+          .split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0)
+          .filter(line => !/^\[.*\]$/.test(line))
+          .map(line => line.replace(/ \([^)]*\)/g, '').trim())
+          .map(line => {
+            if (line.length > 30) {
+              const words = line.split(' ');
+              let currentLength = 0;
+              return words
+                .reduce((acc, word) => {
+                  if (currentLength + word.length + 1 > 30) {
+                    acc.push('\N');
+                    currentLength = 0;
+                  }
+                  acc.push(word);
+                  currentLength += word.length + 1;
+                  return acc;
+                }, [])
+                .join(' ').replace(/ \N /g, '\\N').trim();
+            }
+            return line;
+          })
+          .map(line => line.toUpperCase())
+          .map(line => line.replaceAll(/IN'(?!T)/gi, "ING").trim())
+          .map(line => `♪ ${line} ♪`)
+          .join('\n');
+      }
+
+      function checkForEligibility(text) {
+        const disabledCalc = text === "" ? true : false;
+        document.querySelectorAll('button').forEach(button => {
+          button.disabled = disabledCalc;
+        });
+      }
+      
+      function censorLyrics(lyrics) {
+        const wordsToCensor = ["bitch","nigga","fuck","ass","shit","ho"];
+        const censorWord = word => {
+          return word[0] + '*'.repeat(word.length - 1);
+        };
+
+        return lyrics
+          .split('\n')
+          .map(line => line.trim()) 
+          .map(line => {
+            wordsToCensor.forEach(word => {
+              const regex = new RegExp(`\\b${word}(s|es|)\\b`, 'gi');
+              line = line.replace(regex, censorWord(word));
+            });
+            return line;
+          })
+          .map(line => line.toUpperCase())
+          .join('\n');
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <textarea oninput="checkForEligibility(this.value)" id="lyrics"></textarea>
+      <button disabled onclick="document.getElementById('lyrics').value = formatLyrics(document.getElementById('lyrics').value)">
+        Format Lyrics for Closed Captioning
+      </button>
+      <button disabled onclick="document.getElementById('lyrics').value = censorLyrics(document.getElementById('lyrics').value)">
+        Censor Explicit Words (English)
+      </button>
+    </div>
+  </body>
+</html>
