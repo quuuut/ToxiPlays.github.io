@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -493,13 +494,216 @@
     animation: pulse 1s infinite;
     margin-right: 6px;
   }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover { opacity: 0.8; }
+
+  /* ─── Contributors Dropdown ─── */
+  .contributors-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .contributors-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-mid);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0;
+    margin-left: 0.4rem;
+    opacity: 0.6;
+    transition: opacity 0.2s, color 0.2s;
+    vertical-align: baseline;
+  }
+  .contributors-btn:hover { opacity: 1; color: var(--accent); }
+
+  .contributors-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem 1.2rem;
+    min-width: 260px;
+    z-index: 500;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .contributors-menu.open { display: flex; }
+
+  .contributors-menu-title {
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.2rem;
+  }
+
+  .contributors-menu .entry {
+    font-size: 0.65rem;
+    color: var(--text-bright);
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+  }
+  .contributors-menu .entry.muted {
+    font-size: 0.6rem;
+    color: var(--text-mid);
+    margin-top: 0.2rem;
+  }
+
+  /* ─── Design Panel (Customizer) ─── */
+  .design-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .design-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  .design-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    z-index: 1500;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .design-panel::-webkit-scrollbar { display: none; }
+  .design-panel.active { transform: translateX(0); }
+
+  .design-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .design-header span {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+  }
+  .design-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+  .design-close:hover { color: var(--accent); }
+
+  .design-section { display: flex; flex-direction: column; gap: 1rem; }
+  .design-section-title {
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .design-group { display: flex; flex-direction: column; gap: 0.3rem; }
+  .design-group label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .design-color-row { display: flex; align-items: stretch; gap: 0; }
+  .design-color-row input[type="color"] {
+    width: 36px; height: 30px;
+    border: 1px solid var(--border);
+    border-right: none;
+    background: var(--bg);
+    cursor: pointer;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .design-color-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+  .design-color-row input[type="color"]::-webkit-color-swatch { border: none; }
+  .design-color-row input[type="text"].hex-input {
+    flex: 1;
+    min-width: 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--text-bright);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.5rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .design-color-row input[type="text"].hex-input:focus { border-color: var(--accent); }
+
+  .design-reset {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    margin-top: auto;
+  }
+  .design-reset:hover { border-color: var(--accent2); color: var(--accent2); }
 </style>
 </head>
 <body>
 
 <header>
   <h1>TTML Renderer</h1>
-  <span>v.1.5.2 by <a href="https://spicylyrics.org/toxi" target="_blank" rel="noopener noreferrer">@toxi</a></span>
+  <div class="contributors-wrap">
+    <span>v.2.0 by <a href="https://spicylyrics.org/toxi" target="_blank" rel="noopener noreferrer">@toxi</a></span>
+    <button class="contributors-btn" id="contributors-btn" title="View contributors">▾</button>
+    <div class="contributors-menu" id="contributors-menu">
+      <div class="contributors-menu-title">Contributors</div>
+      <div class="entry"><a href="https://spicylyrics.org/toxi" target="_blank" rel="noopener noreferrer">@toxi</a> — base code</div>
+      <div class="entry"><a href="https://genius.com/gooncave" target="_blank" rel="noopener noreferrer">alex</a> — color-changing code</div>
+      <div class="entry muted">Special thanks to <a href="https://github.com/Steve-xmh" target="_blank" rel="noopener noreferrer">SteveXMH</a> for the <a href="https://amll-ttml-tool.stevexmh.net/" target="_blank" rel="noopener noreferrer">AMLL TTML tool</a></div>
+    </div>
+  </div>
+  <button class="design-toggle" id="btn-design" title="Design Settings">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
+      <line x1="2" y1="3.5" x2="12" y2="3.5"/>
+      <line x1="2" y1="7" x2="12" y2="7"/>
+      <line x1="2" y1="10.5" x2="12" y2="10.5"/>
+      <circle cx="4.5" cy="3.5" r="1.3" fill="currentColor"/>
+      <circle cx="9.5" cy="7" r="1.3" fill="currentColor"/>
+      <circle cx="6" cy="10.5" r="1.3" fill="currentColor"/>
+    </svg>
+  </button>
 </header>
 
 <div class="upload-panel">
@@ -555,6 +759,86 @@
   <div class="render-sub" id="render-sub">Preparing…</div>
   <div class="render-bar-track"><div class="render-bar-fill" id="render-bar-fill"></div></div>
   <button class="render-cancel" id="render-cancel">Cancel</button>
+</div>
+
+<div id="design-panel" class="design-panel">
+  <div class="design-header">
+    <span>Design</span>
+    <button class="design-close" id="design-close">&times;</button>
+  </div>
+
+  <!-- Colors -->
+  <div class="design-section">
+    <div class="design-section-title">Colors</div>
+    <div class="design-group">
+      <label>Accent &amp; Active Word</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-accent" value="#e8f440">
+        <input type="text" class="hex-input" id="hex-accent" value="#e8f440" spellcheck="false">
+      </div>
+    </div>
+    <div class="design-group">
+      <label>Accent 2</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-accent2" value="#ff4d6d">
+        <input type="text" class="hex-input" id="hex-accent2" value="#ff4d6d" spellcheck="false">
+      </div>
+    </div>
+  </div>
+
+  <!-- Surfaces -->
+  <div class="design-section">
+    <div class="design-section-title">Surfaces</div>
+    <div class="design-group">
+      <label>Background</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-bg" value="#0a0a0f">
+        <input type="text" class="hex-input" id="hex-bg" value="#0a0a0f" spellcheck="false">
+      </div>
+    </div>
+    <div class="design-group">
+      <label>Surface</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-surface" value="#111118">
+        <input type="text" class="hex-input" id="hex-surface" value="#111118" spellcheck="false">
+      </div>
+    </div>
+    <div class="design-group">
+      <label>Border</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-border" value="#1e1e2e">
+        <input type="text" class="hex-input" id="hex-border" value="#1e1e2e" spellcheck="false">
+      </div>
+    </div>
+  </div>
+
+  <!-- Text -->
+  <div class="design-section">
+    <div class="design-section-title">Text</div>
+    <div class="design-group">
+      <label>Bright</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-text-bright" value="#c8c8e8">
+        <input type="text" class="hex-input" id="hex-text-bright" value="#c8c8e8" spellcheck="false">
+      </div>
+    </div>
+    <div class="design-group">
+      <label>Mid</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-text-mid" value="#6a6a9a">
+        <input type="text" class="hex-input" id="hex-text-mid" value="#6a6a9a" spellcheck="false">
+      </div>
+    </div>
+    <div class="design-group">
+      <label>Dim</label>
+      <div class="design-color-row">
+        <input type="color" id="pick-text-dim" value="#3a3a55">
+        <input type="text" class="hex-input" id="hex-text-dim" value="#3a3a55" spellcheck="false">
+      </div>
+    </div>
+  </div>
+
+  <button class="design-reset" id="design-reset">Reset to Defaults</button>
 </div>
 
 <script>
@@ -1148,6 +1432,8 @@ let renderCancelled = false;
 
 document.getElementById('render-cancel').addEventListener('click', () => {
   renderCancelled = true;
+  document.getElementById('render-overlay').classList.remove('active');
+  document.getElementById('btn-render').classList.remove('rendering');
 });
 
 document.getElementById('btn-render').addEventListener('click', startRender);
@@ -1172,12 +1458,15 @@ async function startRender() {
   const LEFT_PAD = 80;
   const RIGHT_PAD = 80;
   const MAX_TEXT_W = W - LEFT_PAD - RIGHT_PAD;
-  const BG = '#0a0a0f';
-  const COL_DIM = '#3a3a55';
-  const COL_MID = '#6a6a9a';
-  const COL_BRIGHT = '#c8c8e8';
-  const COL_ACTIVE = '#e8f440';
-  const COL_BORDER = '#1e1e2e';
+
+  // Read CSS variables so the render matches the current theme
+  const cs = getComputedStyle(document.documentElement);
+  const BG       = cs.getPropertyValue('--bg').trim()          || '#0a0a0f';
+  const COL_DIM   = cs.getPropertyValue('--text-dim').trim()   || '#3a3a55';
+  const COL_MID   = cs.getPropertyValue('--text-mid').trim()   || '#6a6a9a';
+  const COL_BRIGHT = cs.getPropertyValue('--text-bright').trim()|| '#c8c8e8';
+  const COL_ACTIVE = cs.getPropertyValue('--accent').trim()    || '#e8f440';
+  const COL_BORDER = cs.getPropertyValue('--border').trim()    || '#1e1e2e';
   const JITTER_DUR = 0.060;
   // Scroll smoothing: lerp speed (higher = snappier, lower = smoother)
   const SCROLL_LERP = 4.0; // units: per second
@@ -1526,6 +1815,151 @@ async function startRender() {
     }
   };
 }
+// ─── Contributors Dropdown ────────────────────────────────────────────────────
+const contribBtn = document.getElementById('contributors-btn');
+const contribMenu = document.getElementById('contributors-menu');
+contribBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  contribMenu.classList.toggle('open');
+});
+document.addEventListener('click', () => contribMenu.classList.remove('open'));
+contribMenu.addEventListener('click', (e) => e.stopPropagation());
+
+// ─── UI Customizer ────────────────────────────────────────────────────────────
+const THEME_KEY = 'ttml-renderer-theme';
+const DEFAULTS = {
+  '--accent':      '#e8f440',
+  '--accent2':     '#ff4d6d',
+  '--bg':          '#0a0a0f',
+  '--surface':     '#111118',
+  '--border':      '#1e1e2e',
+  '--text-bright': '#c8c8e8',
+  '--text-mid':    '#6a6a9a',
+  '--text-dim':    '#3a3a55'
+};
+
+// accent controls both --accent and --active-word
+const PICKER_MAP = {
+  'pick-accent':      '--accent',
+  'pick-accent2':     '--accent2',
+  'pick-bg':          '--bg',
+  'pick-surface':     '--surface',
+  'pick-border':      '--border',
+  'pick-text-bright': '--text-bright',
+  'pick-text-mid':    '--text-mid',
+  'pick-text-dim':    '--text-dim'
+};
+
+const designPanel = document.getElementById('design-panel');
+
+function hexToRGBA(hex, alpha) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  const r = parseInt(hex.substring(0,2),16);
+  const g = parseInt(hex.substring(2,4),16);
+  const b = parseInt(hex.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+const glowStyleEl = document.createElement('style');
+glowStyleEl.id = 'dynamic-glow';
+document.head.appendChild(glowStyleEl);
+
+function syncAccentDerived(color) {
+  // Keep --active-word in sync with --accent
+  document.documentElement.style.setProperty('--active-word', color);
+  document.documentElement.style.setProperty('--active-line', hexToRGBA(color, 0.06));
+  glowStyleEl.textContent = `
+    .lyric-span.active {
+      text-shadow: 0 0 20px ${hexToRGBA(color, 0.4)} !important;
+    }
+    .lyric-span.active.long-word {
+      animation:
+        word-jitter 60ms linear forwards,
+        float-up var(--word-dur, 0.3s) cubic-bezier(0.22, 1, 0.36, 1) forwards 60ms,
+        word-glow-dynamic 0.8s ease-in-out infinite 60ms !important;
+    }
+    @keyframes word-glow-dynamic {
+      0%   { text-shadow: 0 0 10px ${hexToRGBA(color, 0.5)}; }
+      50%  { text-shadow: 0 0 30px ${hexToRGBA(color, 0.9)}, 0 0 60px ${hexToRGBA(color, 0.4)}; }
+      100% { text-shadow: 0 0 10px ${hexToRGBA(color, 0.5)}; }
+    }
+  `;
+}
+
+// Load saved theme
+(function loadTheme() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(THEME_KEY));
+    if (saved) {
+      Object.entries(saved).forEach(([prop, val]) => {
+        document.documentElement.style.setProperty(prop, val);
+      });
+      Object.entries(PICKER_MAP).forEach(([pickerId, cssVar]) => {
+        if (saved[cssVar]) {
+          document.getElementById(pickerId).value = saved[cssVar];
+          const hexEl = document.getElementById(pickerId.replace('pick-','hex-'));
+          if (hexEl) hexEl.value = saved[cssVar];
+        }
+      });
+      if (saved['--accent']) syncAccentDerived(saved['--accent']);
+    }
+  } catch(e) {}
+})();
+
+document.getElementById('btn-design').addEventListener('click', () => {
+  designPanel.classList.toggle('active');
+});
+document.getElementById('design-close').addEventListener('click', () => {
+  designPanel.classList.remove('active');
+});
+
+function applyColor(cssVar, hexVal, pickerId) {
+  document.documentElement.style.setProperty(cssVar, hexVal);
+  document.getElementById(pickerId).value = hexVal;
+  document.getElementById(pickerId.replace('pick-','hex-')).value = hexVal;
+  if (cssVar === '--accent') syncAccentDerived(hexVal);
+  saveTheme();
+}
+
+function bindPicker(pickerId, cssVar) {
+  const hexId = pickerId.replace('pick-','hex-');
+  document.getElementById(pickerId).addEventListener('input', (e) => {
+    applyColor(cssVar, e.target.value, pickerId);
+  });
+  document.getElementById(hexId).addEventListener('input', (e) => {
+    let val = e.target.value.trim();
+    if (!val.startsWith('#')) val = '#' + val;
+    if (/^#[0-9a-fA-F]{6}$/.test(val)) applyColor(cssVar, val, pickerId);
+  });
+  document.getElementById(hexId).addEventListener('blur', (e) => {
+    let val = e.target.value.trim();
+    if (!val.startsWith('#')) val = '#' + val;
+    if (/^#[0-9a-fA-F]{3}$/.test(val)) {
+      val = '#'+val[1]+val[1]+val[2]+val[2]+val[3]+val[3];
+      applyColor(cssVar, val, pickerId);
+    }
+  });
+}
+Object.entries(PICKER_MAP).forEach(([pickerId, cssVar]) => bindPicker(pickerId, cssVar));
+
+function saveTheme() {
+  const theme = {};
+  Object.values(PICKER_MAP).forEach(prop => {
+    theme[prop] = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  });
+  localStorage.setItem(THEME_KEY, JSON.stringify(theme));
+}
+
+document.getElementById('design-reset').addEventListener('click', () => {
+  localStorage.removeItem(THEME_KEY);
+  Object.entries(DEFAULTS).forEach(([prop, val]) => {
+    document.documentElement.style.setProperty(prop, val);
+  });
+  Object.entries(PICKER_MAP).forEach(([pickerId, cssVar]) => {
+    document.getElementById(pickerId).value = DEFAULTS[cssVar];
+    document.getElementById(pickerId.replace('pick-','hex-')).value = DEFAULTS[cssVar];
+  });
+  syncAccentDerived(DEFAULTS['--accent']);
+});
 </script>
-</body>
-</html>
