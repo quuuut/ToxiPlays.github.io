@@ -499,7 +499,7 @@
 
 <header>
   <h1>TTML Renderer</h1>
-  <span>v.1.5.1 by <a href="https://spicylyrics.org/toxi" target="spicylyrics" rel="noopener noreferrer">@toxi</a></span>
+  <span>v.1.5.2 by <a href="https://spicylyrics.org/toxi" target="_blank" rel="noopener noreferrer">@toxi</a></span>
 </header>
 
 <div class="upload-panel">
@@ -818,8 +818,10 @@ function parseTTML(xmlString) {
         const s = spans.find(s => s.el === el && s.lineEl === null);
         if (s) s.lineEl = lineEl;
       });
+      // Flag adlib lines that contain overlapping timing layers (indicated by ';' in span text)
+      const hasOverlap = adlibTokens.some(t => t.type === 'span' && t.text.includes(';'));
       container.appendChild(lineEl);
-      lines.push({ el: lineEl, begin, end });
+      lines.push({ el: lineEl, begin, end, skipRetroactive: hasOverlap });
     }
   });
 
@@ -937,10 +939,14 @@ function syncLoop() {
       // Retroactively mark all earlier spans on the same line as past.
       // This corrects skipped frames (tab unfocus, freeze) where spans were
       // never individually activated and would otherwise stay greyed out.
-      for (let j = 0; j < i; j++) {
-        if (spans[j].lineEl === s.lineEl && !newActiveSpans.has(j)) {
-          spans[j].el.classList.remove('active', 'long-word');
-          spans[j].el.classList.add('past');
+      // Bypass for adlib lines with overlapping timing layers (semicolon indicator).
+      const lineEntry = lines.find(l => l.el === s.lineEl);
+      if (!lineEntry || !lineEntry.skipRetroactive) {
+        for (let j = 0; j < i; j++) {
+          if (spans[j].lineEl === s.lineEl && !newActiveSpans.has(j)) {
+            spans[j].el.classList.remove('active', 'long-word');
+            spans[j].el.classList.add('past');
+          }
         }
       }
     }
