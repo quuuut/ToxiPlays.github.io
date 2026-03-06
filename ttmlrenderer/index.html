@@ -496,10 +496,10 @@
 </style>
 </head>
 <body>
- 
+
 <header>
   <h1>TTML Renderer</h1>
-  <span>guided by <a href="https://spicylyrics.org/toxi">@toxi</a></span>
+  <span>v1.5 by <a target="spicy" href="https://spicylyrics.com/toxi">@toxi</a></span>
 </header>
 
 <div class="upload-panel">
@@ -598,12 +598,33 @@ function parseTTML(xmlString) {
   const ns = 'http://www.w3.org/ns/ttml';
   const ttmNS = 'http://www.w3.org/ns/ttml#metadata';
 
-  const pEls = doc.getElementsByTagNameNS(ns, 'p');
   const container = document.getElementById('lyrics-container');
   container.innerHTML = '';
   spans = [];
   lines = [];
   breakBars = [];
+
+  // ── Check for XML parse error ──
+  const xmlErr = doc.querySelector('parsererror');
+  if (xmlErr) {
+    const msg = xmlErr.textContent.split('\n')[0].trim();
+    container.innerHTML = `<div class="empty-state">
+      <div class="big">INVALID FILE</div>
+      <div class="sub">The file could not be read as XML.<br><em>${msg}</em><br><br>Make sure the file is a valid .ttml file and try again.</div>
+    </div>`;
+    return;
+  }
+
+  // ── Find <p> elements — try namespaced first, then unqualified fallback ──
+  let pEls = doc.getElementsByTagNameNS(ns, 'p');
+  if (pEls.length === 0) pEls = doc.getElementsByTagName('p');
+  if (pEls.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="big">NO LYRICS FOUND</div>
+      <div class="sub">The file was read successfully but contains no lyric lines.<br>Check that it is a TTML lyric file (not a subtitle or caption file) and try again.</div>
+    </div>`;
+    return;
+  }
 
   Array.from(pEls).forEach((p) => {
     const agent = p.getAttributeNS(ttmNS, 'agent') || p.getAttribute('ttm:agent') || 'v1';
@@ -626,8 +647,9 @@ function parseTTML(xmlString) {
           // Detect x-bg (background vocal / ad-lib container) — always recurse into it
           const role = child.getAttributeNS(ttmNS, 'role') || child.getAttribute('ttm:role') || '';
           const isXBg = role === 'x-bg';
-          if (isXBg) {
-            // Recurse, flagging all children as ad-lib
+          // Skip non-lyric annotation spans (x-roman, x-translation, etc.)
+          if (role && role !== 'x-bg') return;
+          if (isXBg) {            // Recurse, flagging all children as ad-lib
             collectTokens(child, true);
           } else if (b && e) {
             const begin = parseTime(b), end = parseTime(e);
@@ -708,32 +730,30 @@ function parseTTML(xmlString) {
           // Collect a run of spans separated only by empty/no text nodes
           const group = [tok];
           let j = i + 1;
-          while (j < processedTokens.length) {
-            const next = processedTokens[j];
-            if (next.type === 'text') {
-              // If purely whitespace, peek ahead — if next after is a span, this space breaks the group
-              if (/\S/.test(next.text)) break; // real content = group ends
-              // It's whitespace-only — check if the token after it is a span
-              const afterSpace = processedTokens[j + 1];
-              if (!afterSpace || afterSpace.type !== 'span') break;
-              // Whitespace between spans = word boundary = end group here
-              break;
-            } else {
-              // Another span immediately adjacent (no intervening text node) = same syllable group
-              group.push(next);
-              j++;
+          // Also end the group if this span's own text ends with whitespace
+          if (!/\s$/.test(tok.text)) {
+            while (j < processedTokens.length) {
+              const next = processedTokens[j];
+              if (next.type === 'text') {
+                if (/\S/.test(next.text)) break; // real content = group ends
+                const afterSpace = processedTokens[j + 1];
+                if (!afterSpace || afterSpace.type !== 'span') break;
+                break; // whitespace between spans = word boundary
+              } else {
+                // Adjacent span — check if previous ended with space before adding
+                group.push(next);
+                j++;
+                if (/\s$/.test(next.text)) break; // trailing space = word boundary
+              }
             }
           }
 
           if (group.length === 1) {
             // Single span — emit directly
-            lineEl.appendChild(makeSpanEl(tok));
+            appendSpanWithTrail(lineEl, group[0]);
           } else {
             // Multi-syllable word — wrap in a non-breaking group
-            const wrapper = document.createElement('span');
-            wrapper.className = 'word-group';
-            group.forEach(t => wrapper.appendChild(makeSpanEl(t)));
-            lineEl.appendChild(wrapper);
+            appendGroupWithTrail(lineEl, group);
           }
           i = j;
         }
@@ -748,11 +768,35 @@ function parseTTML(xmlString) {
       spanEl.dataset.begin = tok.begin;
       spanEl.dataset.end   = tok.end;
       spanEl.dataset.duration = tok.wordDuration;
-      spanEl.textContent = tok.text;
+      // Strip trailing whitespace from display text — it will be emitted as a
+      // separate text node after the span so inline-block gaps render correctly.
+      spanEl.textContent = tok.text.trimEnd();
       spanEl.style.setProperty('--word-dur', tok.wordDuration.toFixed(3) + 's');
       spanEl.addEventListener('click', () => seekToTime(tok.begin));
       spans.push({ el: spanEl, begin: tok.begin, end: tok.end, duration: tok.wordDuration, lineEl: null /* set below */ });
       return spanEl;
+    }
+
+    // Emit a span (or word-group) plus any trailing space as a sibling text node
+    function appendSpanWithTrail(parent, tok) {
+      const el = makeSpanEl(tok);
+      parent.appendChild(el);
+      const trail = tok.text.match(/\s+$/);
+      if (trail) parent.appendChild(document.createTextNode(trail[0]));
+    }
+
+    function appendGroupWithTrail(parent, group) {
+      const lastTok = group[group.length - 1];
+      const trail = lastTok.text.match(/\s+$/);
+      if (group.length === 1) {
+        appendSpanWithTrail(parent, group[0]);
+      } else {
+        const wrapper = document.createElement('span');
+        wrapper.className = 'word-group';
+        group.forEach(t => wrapper.appendChild(makeSpanEl(t)));
+        parent.appendChild(wrapper);
+        if (trail) parent.appendChild(document.createTextNode(trail[0]));
+      }
     }
 
     // Build main line
@@ -813,7 +857,10 @@ function parseTTML(xmlString) {
   }
 
   if (lines.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="big">ERROR</div><div class="sub">Could not parse TTML</div></div>';
+    container.innerHTML = `<div class="empty-state">
+      <div class="big">NO TIMED LINES</div>
+      <div class="sub">The file was parsed but contained no word-timed lyric lines.<br>This player requires a TTML file with word-level timing (e.g. from Apple Music). Check that the correct file was uploaded.</div>
+    </div>`;
   }
 
   // Extract <songwriter> tags and append credit line
@@ -1181,6 +1228,8 @@ async function startRender() {
           run.push({ ...segments[i], width: tw });
           runW += tw;
           i++;
+          // If this span's text ends with whitespace, it's a word boundary — end the run
+          if (/\s$/.test(segments[i - 1].text)) break;
         }
         units.push({ segs: run, width: runW, isSpace: false });
       }
