@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <!-- bro's the snooper -->
 <html lang="en">
@@ -3162,41 +3160,27 @@ async function startInYourFaceRender() {
             ctx.shadowBlur  = 0;
             ctx.fillText(tok.text, x, cy);
           } else {
-            const future  = _t < tok.begin;
-            const past    = _t >= tok.end;
-            const isActive = !future && !past;
-            const bump    = getSpanY_iyf(tok, _t);
+            const future = _t < tok.begin;
+            const past   = _t >= tok.end;
+            const bump   = getSpanY_iyf(tok, _t);
             if (future) {
               ctx.globalAlpha = 0;
               ctx.fillText(tok.text, x, cy);
             } else if (past) {
-              ctx.globalAlpha  = alpha;
-              ctx.fillStyle    = sweepCol;
-              ctx.shadowColor  = sweepCol;
-              ctx.shadowBlur   = 8;
+              ctx.globalAlpha = alpha;
+              ctx.fillStyle   = sweepCol;
+              ctx.shadowBlur  = 0;
               ctx.fillText(tok.text, x, cy + bump);
-              ctx.shadowBlur   = 0;
             } else {
               const prog  = (_t - tok.begin) / Math.max(tok.end - tok.begin, 0.001);
               const sweep = prog * tw;
               ctx.globalAlpha = alpha;
               ctx.fillStyle   = COL_DIM;
-              ctx.shadowBlur  = 0;
               ctx.fillText(tok.text, x, cy + bump);
               ctx.save();
               ctx.beginPath(); ctx.rect(x, cy - fs, sweep, fs * 2); ctx.clip();
-              ctx.fillStyle   = sweepCol;
-              ctx.shadowColor = sweepCol;
-              ctx.shadowBlur  = 14;
-              ctx.fillText(tok.text, x, cy + bump);
-              ctx.shadowBlur  = 0;
-              ctx.restore();
-              // Active word halo — glow behind the entire token while it's being sung
-              ctx.save();
-              ctx.globalAlpha = alpha * 0.5;
-              ctx.shadowColor = sweepCol;
-              ctx.shadowBlur  = 22;
-              ctx.fillStyle   = 'rgba(0,0,0,0)';
+              ctx.fillStyle  = sweepCol;
+              ctx.shadowBlur = 0;
               ctx.fillText(tok.text, x, cy + bump);
               ctx.restore();
             }
