@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <!-- bro's the snooper -->
 <html lang="en">
@@ -1156,7 +1157,7 @@ let _audioBaseName = '';   // filename without extension
 let _audioExt      = '';   // extension in original case
 
 // ─── App version ──────────────────────────────────────────────────────────────
-const APP_VERSION = '4.1.0';
+const APP_VERSION = '4.1.1';
 
 // ─── Filename resolver ────────────────────────────────────────────────────────
 const FILENAME_KEY     = 'ttml-renderer-filename';
@@ -1175,7 +1176,7 @@ function resolveFilename(type, now) {
   const h24  = now.getHours();
   const h12r = h24 % 12 || 12;
   const ampm = h24 < 12 ? 'a.m.' : 'p.m.';
-  const time24 = `${pad2(h24)}:${pad2(now.getMinutes())}`;
+  const time24 = `${pad2(h24)}-${pad2(now.getMinutes())}`;
   const time12 = `${h12r}:${pad2(now.getMinutes())} ${ampm}`;
 
   let name = pattern
@@ -3161,27 +3162,41 @@ async function startInYourFaceRender() {
             ctx.shadowBlur  = 0;
             ctx.fillText(tok.text, x, cy);
           } else {
-            const future = _t < tok.begin;
-            const past   = _t >= tok.end;
-            const bump   = getSpanY_iyf(tok, _t);
+            const future  = _t < tok.begin;
+            const past    = _t >= tok.end;
+            const isActive = !future && !past;
+            const bump    = getSpanY_iyf(tok, _t);
             if (future) {
               ctx.globalAlpha = 0;
               ctx.fillText(tok.text, x, cy);
             } else if (past) {
-              ctx.globalAlpha = alpha;
-              ctx.fillStyle   = sweepCol;
-              ctx.shadowBlur  = 0;
+              ctx.globalAlpha  = alpha;
+              ctx.fillStyle    = sweepCol;
+              ctx.shadowColor  = sweepCol;
+              ctx.shadowBlur   = 8;
               ctx.fillText(tok.text, x, cy + bump);
+              ctx.shadowBlur   = 0;
             } else {
               const prog  = (_t - tok.begin) / Math.max(tok.end - tok.begin, 0.001);
               const sweep = prog * tw;
               ctx.globalAlpha = alpha;
               ctx.fillStyle   = COL_DIM;
+              ctx.shadowBlur  = 0;
               ctx.fillText(tok.text, x, cy + bump);
               ctx.save();
               ctx.beginPath(); ctx.rect(x, cy - fs, sweep, fs * 2); ctx.clip();
-              ctx.fillStyle  = sweepCol;
-              ctx.shadowBlur = 0;
+              ctx.fillStyle   = sweepCol;
+              ctx.shadowColor = sweepCol;
+              ctx.shadowBlur  = 14;
+              ctx.fillText(tok.text, x, cy + bump);
+              ctx.shadowBlur  = 0;
+              ctx.restore();
+              // Active word halo — glow behind the entire token while it's being sung
+              ctx.save();
+              ctx.globalAlpha = alpha * 0.5;
+              ctx.shadowColor = sweepCol;
+              ctx.shadowBlur  = 22;
+              ctx.fillStyle   = 'rgba(0,0,0,0)';
               ctx.fillText(tok.text, x, cy + bump);
               ctx.restore();
             }
@@ -3202,9 +3217,15 @@ async function startInYourFaceRender() {
     const colSweep = lineObj.isV2 ? COL_ACTIVE2 : COL_ACTIVE;
 
     if (!isAdlib) {
-      const w  = measureWords(lineObj.words, FONT_SIZE);
+      // Shrink font by up to 10% (1px steps) if the line is too wide for the frame
+      const MIN_MAIN_FS = Math.round(FONT_SIZE * 0.90);
+      let fs = FONT_SIZE;
+      while (fs > MIN_MAIN_FS && measureWords(lineObj.words, fs) > MAX_LINE_PX) {
+        fs--;
+      }
+      const w  = measureWords(lineObj.words, fs);
       const cx = CENTER_X - w / 2;
-      drawWords(lineObj.words, cx, cy, FONT_SIZE, alpha, mode, colSweep);
+      drawWords(lineObj.words, cx, cy, fs, alpha, mode, colSweep);
       return;
     }
 
@@ -3430,7 +3451,7 @@ async function startInYourFaceRender() {
     lastDrawTime = wallMs;
 
     const t = Math.max(renderACtx.currentTime - audioStartTime, 0);
-    const endAt = creditText ? lastSpanEnd + CREDIT_DUR + 2.5 : duration + 1.5;
+    const endAt = Math.max(duration + 1.5, creditText ? lastSpanEnd + CREDIT_DUR + 2.5 : 0);
     if (t > endAt) {
       renderDone = true;
       try { audioSrc.stop(); } catch(_) {}
