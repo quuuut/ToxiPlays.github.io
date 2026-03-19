@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- bro's the snooper -->
 <html lang="en">
@@ -1101,6 +1102,17 @@
     </div>
   </div>
 
+  <!-- Karaoke Settings (shown only when Karaoke is selected) -->
+  <div class="design-section" id="karaoke-settings" style="display:none;">
+    <div class="design-section-title">Karaoke Settings</div>
+    <div class="design-group">
+      <label class="design-check-label">
+        <input type="checkbox" id="karaoke-ignore-adlibs">
+        <span>Ignore background vocal lines</span>
+      </label>
+    </div>
+  </div>
+
   <!-- IYF Settings (shown only when IYF is selected) -->
   <div class="design-section" id="iyf-settings" style="display:none;">
     <div class="design-section-title">In-Your-Face Settings</div>
@@ -1155,7 +1167,7 @@ let _audioBaseName = '';   // filename without extension
 let _audioExt      = '';   // extension in original case
 
 // ─── App version ──────────────────────────────────────────────────────────────
-const APP_VERSION = '4.1.2';
+const APP_VERSION = '4.1.3';
 
 // ─── Filename resolver ────────────────────────────────────────────────────────
 const FILENAME_KEY     = 'ttml-renderer-filename';
@@ -1175,7 +1187,7 @@ function resolveFilename(type, now) {
   const h12r = h24 % 12 || 12;
   const ampm = h24 < 12 ? 'a.m.' : 'p.m.';
   const time24 = `${pad2(h24)}-${pad2(now.getMinutes())}`;
-  const time12 = `${h12r}:${pad2(now.getMinutes())} ${ampm}`;
+  const time12 = `${h12r}-${pad2(now.getMinutes())} ${ampm}`;
 
   let name = pattern
     .replace(/%VER#%/g,   APP_VERSION)
@@ -2457,8 +2469,11 @@ async function startKaraokeRender() {
   const APPEAR_BEFORE = 1.5;
   let _splitGroupCounter = 0;
 
+  const ignoreAdlibs = document.getElementById('karaoke-ignore-adlibs').checked;
+
   for (const l of lines) {
     const isAdlib = l.el.classList.contains('adlib');
+    if (ignoreAdlibs && isAdlib) continue;
     const agent = l.el.dataset.agent || 'v1';
     const isV2 = agent === 'v2';
     const fs = isAdlib ? ADLIB_FONT_SIZE : FONT_SIZE;
@@ -3538,15 +3553,17 @@ async function startInYourFaceRender() {
   });
 })();
 
-// ─── IYF Settings visibility ──────────────────────────────────────────────────
+// ─── IYF / Karaoke Settings visibility ───────────────────────────────────────
 (function () {
-  const styleSelect = document.getElementById('export-style');
-  const iyfSettings = document.getElementById('iyf-settings');
-  function syncIYF() {
-    iyfSettings.style.display = styleSelect.value === 'inyourface' ? '' : 'none';
+  const styleSelect      = document.getElementById('export-style');
+  const iyfSettings      = document.getElementById('iyf-settings');
+  const karaokeSettings  = document.getElementById('karaoke-settings');
+  function syncExportSettings() {
+    iyfSettings.style.display     = styleSelect.value === 'inyourface' ? '' : 'none';
+    karaokeSettings.style.display = styleSelect.value === 'karaoke'    ? '' : 'none';
   }
-  styleSelect.addEventListener('change', syncIYF);
-  syncIYF();
+  styleSelect.addEventListener('change', syncExportSettings);
+  syncExportSettings();
 })();
 
 // ─── Contributors Dropdown ────────────────────────────────────────────────────
