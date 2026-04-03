@@ -1,0 +1,24 @@
+.body {
+    text-align: left;
+    font-size: 1em;
+}
+
+.hint {
+    font-size: smaller;
+    opacity: 70%;
+}
+
+.img-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+img {
+    width: 50%;
+    transition: 1s;
+}
+
+img:hover {
+    width: 60%;
+}
