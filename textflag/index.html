@@ -1,68 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TextFlag</title>
-  <meta name="title" content="TextFlag | Review Tool">
-  <meta name="keywords" content="spicy lyrics, lyrics, ttml, help, review, coach">
-  <meta name="robots" content="index, follow">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="language" content="English">
-  <meta name="author" content="toxi">
-  <meta name="description" content="Quick and easy way to generate Markdown notes based on the contents of a TTML file.">
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
-</head>
-<body>
-  <h1>TextFlag</h1>
-  <div class="controls">
-    <input id="ttmlUrl" placeholder="Paste a direct TTML file URL (https://...)" value="" />
-    <button id="loadBtn">Load</button>
-    <input type="file" id="ttmlFile" accept=".ttml,.xml" style="display: none;" />
-    <button id="exportBtn" class="hidden" disabled>Export</button>
-  </div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TextFlag</title>
+        <meta name="title" content="TextFlag | Review Tool" />
+        <meta
+            name="keywords"
+            content="spicy lyrics, lyrics, ttml, help, review, coach"
+        />
+        <meta name="robots" content="index, follow" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="language" content="English" />
+        <meta name="author" content="toxi" />
+        <meta
+            name="description"
+            content="Quick and easy way to generate Markdown notes based on the contents of a TTML file."
+        />
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1>TextFlag</h1>
+        <div class="controls">
+            <input
+                id="ttmlUrl"
+                placeholder="Paste a direct TTML file URL (https://...)"
+                value=""
+            />
+            <button id="loadBtn">Load</button>
+            <input type="file" id="ttmlFile" style="display: none" />
+            <button id="exportBtn" class="hidden" disabled>Export</button>
+        </div>
 
-  <div id="status">Enter a TTML URL and click Load. Alternatively, click Load to upload a TTML file.<br />If you're new here, <a href="/textflag/guide.html" target="guide">view the guide</a>!</div>
-  <div id="songwriters"></div>
-  
-  <div id="captionContainer"></div>
+        <div id="status">
+            Enter a TTML URL and click Load. Alternatively, click Load to upload
+            a TTML file.<br />If you're new here,
+            <a href="/textflag/guide.html" target="guide">view the guide</a>!
+        </div>
+        <div id="songwriters"></div>
 
-  <div id="exportSection" class="hidden">
-    <textarea id="exportOutput" rows="10" hidden readonly></textarea>
-  </div>
+        <div id="captionContainer"></div>
 
-  <div id="annotationTooltip" class="annotation-tooltip hidden">Raise Flag</div>
+        <div id="exportSection" class="hidden">
+            <textarea id="exportOutput" rows="10" hidden readonly></textarea>
+        </div>
 
-  <div id="annotationModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="annotationModalTitle">
-    <div class="modal-content">
-      <h2 id="annotationModalTitle">Raise Flag</h2>
-      <div class="form-group">
-        <label for="annotationReason">Templates</label>
-        <select id="annotationReason">
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="annotationText">Notes</label>
-        <textarea id="annotationText" rows="4"></textarea>
-      </div>
-      <div class="modal-actions">
-        <button id="annotationSaveBtn">Save</button>
-        <button id="annotationCancelBtn">Cancel</button>
-      </div>
-    </div>
-  </div>
+        <div id="annotationTooltip" class="annotation-tooltip hidden">
+            Raise Flag
+        </div>
 
-  <div id="annotationViewer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="annotationViewerTitle">
-    <div class="modal-content">
-      <h2 id="annotationViewerTitle">Your flag</h2>
-      <div id="annotationDetails"></div>
-      <div class="modal-actions">
-        <button id="annotationEditBtn">Edit</button>
-        <button id="annotationDeleteBtn">Delete</button>
-        <button id="annotationViewerCloseBtn">Close</button>
-      </div>
-    </div>
-  </div>
-</body>
+        <div
+            id="annotationModal"
+            class="modal hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="annotationModalTitle"
+        >
+            <div class="modal-content">
+                <h2 id="annotationModalTitle">Raise Flag</h2>
+                <div class="form-group">
+                    <label for="annotationReason">Templates</label>
+                    <select id="annotationReason"></select>
+                </div>
+                <div class="form-group">
+                    <label for="annotationText">Notes</label>
+                    <textarea id="annotationText" rows="4"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button id="annotationSaveBtn">Save</button>
+                    <button id="annotationCancelBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div
+            id="annotationViewer"
+            class="modal hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="annotationViewerTitle"
+        >
+            <div class="modal-content">
+                <h2 id="annotationViewerTitle">Your flag</h2>
+                <div id="annotationDetails"></div>
+                <div class="modal-actions">
+                    <button id="annotationEditBtn">Edit</button>
+                    <button id="annotationDeleteBtn">Delete</button>
+                    <button id="annotationViewerCloseBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
