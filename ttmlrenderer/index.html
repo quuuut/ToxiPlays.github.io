@@ -862,6 +862,7 @@
       <div class="contributors-menu-title">Contributors</div>
       <div class="entry"><a href="https://spicylyrics.org/toxi" target="_blank" rel="noopener noreferrer">@toxi</a> — base code</div>
       <div class="entry"><a href="https://genius.com/gooncave" target="_blank" rel="noopener noreferrer">alex</a> — color-changing code</div>
+      <div class="entry"><a href="https://quuut.codes" target="_blank" rel="noopener noreferrer">quuut</a> — WebKit file upload fix</div>
       <div class="entry muted">Special thanks to <a href="https://github.com/Steve-xmh" target="_blank" rel="noopener noreferrer">SteveXMH</a> for the <a href="https://amll-ttml-tool.stevexmh.net/" target="_blank" rel="noopener noreferrer">AMLL TTML tool</a></div>
     </div>
   </div>
@@ -879,7 +880,7 @@
 
 <div class="upload-panel">
   <div class="drop-zone" id="ttml-drop">
-    <input type="file" id="ttml-input" accept=".ttml,.xml">
+    <input type="file" id="ttml-input" accept="*,.ttml">
     <div class="label">Lyrics file</div>
     <div class="hint" id="ttml-hint">Drop .ttml here</div>
     <div class="filename" id="ttml-name" style="display:none"></div>
@@ -1167,7 +1168,7 @@ let _audioBaseName = '';   // filename without extension
 let _audioExt      = '';   // extension in original case
 
 // ─── App version ──────────────────────────────────────────────────────────────
-const APP_VERSION = '4.1.3';
+const APP_VERSION = '4.1.4';
 
 // ─── Filename resolver ────────────────────────────────────────────────────────
 const FILENAME_KEY     = 'ttml-renderer-filename';
